@@ -1,0 +1,463 @@
+/* Reset & Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+:root {
+    --primary: #ff4655; /* Free Fire Red */
+    --secondary: #00f0ff; /* Cyan */
+    --dark: #0a0a0a;
+    --darker: #050505;
+    --card-bg: rgba(20, 20, 30, 0.9);
+    --text-light: #ffffff;
+    --text-gray: #aaaaaa;
+    --success: #00ff88;
+    --warning: #ffaa00;
+    --danger: #ff4655;
+}
+
+body {
+    background: var(--darker);
+    color: var(--text-light);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header */
+.dashboard-header {
+    background: rgba(10, 10, 10, 0.95);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--primary);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-left .logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-left .logo img {
+    height: 40px;
+    filter: drop-shadow(0 0 5px var(--primary));
+}
+
+.header-left .logo h1 {
+    color: var(--primary);
+    font-size: 24px;
+    text-shadow: 0 0 10px rgba(255, 70, 85, 0.5);
+}
+
+.header-left .logo span {
+    color: var(--secondary);
+}
+
+.user-welcome {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-welcome i {
+    font-size: 32px;
+    color: var(--secondary);
+}
+
+.welcome-text {
+    color: var(--text-gray);
+    font-size: 14px;
+}
+
+.username {
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.btn-logout {
+    background: linear-gradient(135deg, var(--danger), #ff6b7a);
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.btn-logout:hover {
+    background: linear-gradient(135deg, #ff6b7a, var(--danger));
+    transform: translateY(-2px);
+}
+
+/* Balance Section */
+.balance-section {
+    margin: 30px 0;
+}
+
+.balance-card {
+    background: linear-gradient(135deg, rgba(255,70,85,0.1), rgba(0,240,255,0.1));
+    border-radius: 20px;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.balance-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: rotate(45deg);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% { left: -50%; }
+    100% { left: 150%; }
+}
+
+.balance-icon i {
+    font-size: 48px;
+    color: var(--secondary);
+    background: rgba(0, 240, 255, 0.1);
+    padding: 20px;
+    border-radius: 50%;
+}
+
+.balance-info {
+    flex: 1;
+}
+
+.balance-label {
+    color: var(--text-gray);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.balance-amount {
+    color: white;
+    font-size: 48px;
+    font-weight: bold;
+    text-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+    margin: 10px 0;
+}
+
+.balance-sub {
+    color: var(--text-gray);
+    font-size: 14px;
+}
+
+.btn-refresh {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-refresh:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(360deg);
+}
+
+/* Quick Actions */
+.quick-actions {
+    margin: 40px 0;
+    gap: 30px;
+}
+
+.action-card {
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s;
+}
+
+.action-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--primary);
+    box-shadow: 0 20px 40px rgba(255, 70, 85, 0.2);
+}
+
+.action-icon i {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.deposit-card .action-icon i {
+    color: var(--success);
+}
+
+.withdraw-card .action-icon i {
+    color: var(--warning);
+}
+
+.action-card h3 {
+    color: white;
+    margin-bottom: 15px;
+    font-size: 22px;
+}
+
+.action-card p {
+    color: var(--text-gray);
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+.btn-action {
+    background: linear-gradient(135deg, var(--primary), #ff6b7a);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: 100%;
+}
+
+.btn-action:hover {
+    background: linear-gradient(135deg, #ff6b7a, var(--primary));
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(255, 70, 85, 0.3);
+}
+
+/* Tournaments Section */
+.tournaments-section {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 40px;
+    margin: 40px 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.section-header h2 {
+    color: var(--primary);
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.section-header .section-subtitle {
+    color: var(--secondary);
+    font-size: 18px;
+}
+
+.tournaments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.tournament-item {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    padding: 25px;
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.tournament-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+}
+
+.tournament-item:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+}
+
+.tournament-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.tournament-header h3 {
+    color: white;
+    font-size: 20px;
+}
+
+.tournament-badge {
+    background: rgba(0, 255, 136, 0.2);
+    color: var(--success);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.tournament-details {
+    margin-bottom: 25px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.detail-label {
+    color: var(--text-gray);
+}
+
+.detail-value {
+    color: white;
+    font-weight: bold;
+}
+
+.btn-join {
+    background: linear-gradient(135deg, var(--primary), #ff6b7a);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: 100%;
+}
+
+.btn-join:hover {
+    background: linear-gradient(135deg, #ff6b7a, var(--primary));
+    transform: translateY(-3px);
+}
+
+.loading-spinner {
+    text-align: center;
+    padding: 40px;
+}
+
+.spinner {
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top: 4px solid var(--primary);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.coming-soon {
+    text-align: center;
+    padding: 40px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+}
+
+.coming-soon-label {
+    color: var(--secondary);
+    font-size: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.coming-soon-text {
+    color: var(--primary);
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(255, 70, 85, 0.5);
+}
+
+/* Support Section */
+.support-fixed {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    text-align: right;
+    z-index: 100;
+}
+
+.btn-whatsapp-fixed {
+    background: #25D366;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3);
+    transition: all 0.3s;
+}
+
+.btn-whatsapp-fixed:hover {
+    background: #1da851;
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(37, 211, 102, 0.4);
+}
+
+.support-note-fixed {
+    margin-top: 10px;
+    color: var(--text-gray);
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 15px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 2000;
+    align-items: center;
+    justify-content

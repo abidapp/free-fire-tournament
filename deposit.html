@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deposit - Free Fire Tournament</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background: #0a0a0a;
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .deposit-box {
+            background: rgba(20, 20, 30, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid #ff4655;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #ff4655;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #00f0ff;
+        }
+        
+        .payment-info {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .payment-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .payment-item:last-child {
+            border-bottom: none;
+        }
+        
+        .payment-label {
+            color: #aaa;
+        }
+        
+        .payment-value {
+            color: white;
+            font-weight: bold;
+        }
+        
+        .note-box {
+            background: rgba(255, 170, 0, 0.1);
+            border: 1px solid #ffaa00;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .note-box p {
+            color: #ffaa00;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        /* Upload Section */
+        .upload-section {
+            margin-bottom: 25px;
+        }
+        
+        .upload-label {
+            display: block;
+            margin-bottom: 10px;
+            color: #00f0ff;
+            font-weight: bold;
+        }
+        
+        .upload-area {
+            border: 2px dashed #444;
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .upload-area:hover {
+            border-color: #ff4655;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: #444;
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+        
+        .upload-hint {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        #screenshotInput {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .preview-box {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        #previewImage {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            border: 2px solid #333;
+        }
+        
+        .remove-btn {
+            background: #ff4655;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        /* Amount Selection */
+        .amount-section {
+            margin-bottom: 25px;
+        }
+        
+        .amount-label {
+            display: block;
+            margin-bottom: 10px;
+            color: #00f0ff;
+            font-weight: bold;
+        }
+        
+        .amount-input {
+            position: relative;
+        }
+        
+        .amount-input input {
+            width: 100%;
+            padding: 15px;
+            padding-left: 50px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #333;
+            border-radius: 10px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .currency {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00f0ff;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .quick-amounts {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .amount-btn {
+            background: rgba(255, 70, 85, 0.2);
+            border: 1px solid #ff4655;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .amount-btn:hover {
+            background: rgba(255, 70, 85, 0.4);
+        }
+        
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #00ff88, #00cc66);
+            border: none;
+            border-radius: 10px;
+            color: black;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #00cc66, #00ff88);
+            transform: translateY(-3px);
+        }
+        
+        .submit-btn:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+        }
+        
+        /* Message */
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .message.success {
+            background: rgba(0, 255, 136, 0.1);
+            color: #00ff88;
+            border: 1px solid #00ff88;
+            display: block;
+        }
+        
+        .message.error {
+            background: rgba(255, 70, 85, 0.1);
+            color: #ff4655;
+            border: 1px solid #ff4655;
+            display: block;
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .back-link a {
+            color: #00f0ff;
+            text-decoration: none;
+        }
+        
+        /* Firebase Status */
+        .firebase-status {
+            background: rgba(255, 107, 0, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 14px;
+            color: #ff6b00;
+            display: none;
+        }
+        
+        .firebase-status.connected {
+            background: rgba(0, 255, 136, 0.1);
+            color: #00ff88;
+        }
+        
+        .firebase-status.disconnected {
+            background: rgba(255, 70, 85, 0.1);
+            color: #ff4655;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="deposit-box">
+            <div class="header">
+                <h1><i class="fas fa-money-bill-wave"></i> DEPOSIT FUNDS</h1>
+                <p>Add money to your account for tournaments</p>
+            </div>
+            
+            <!-- Firebase Status -->
+            <div class="firebase-status" id="firebaseStatus">
+                <i class="fas fa-database"></i> 
+                <span id="statusText">Connecting to database...</span>
+            </div>
+            
+            <div class="message" id="message"></div>
+            
+            <!-- Payment Information -->
+            <div class="payment-info">
+                <h3 style="color: #00f0ff; margin-bottom: 15px;">Payment Details</h3>
+                <div class="payment-item">
+                    <span class="payment-label">Account Name:</span>
+                    <span class="payment-value">TOURNAMENT ADMIN</span>
+                </div>
+                <div class="payment-item">
+                    <span class="payment-label">JazzCash Number:</span>
+                    <span class="payment-value">0311-9537990</span>
+                </div>
+                <div class="payment-item">
+                    <span class="payment-label">EasyPaisa Number:</span>
+                    <span class="payment-value">Not Available</span>
+                </div>
+                <div class="payment-item">
+                    <span class="payment-label">Note:</span>
+                    <span class="payment-value" style="color: #ffaa00;">Send exact amount</span>
+                </div>
+            </div>
+            
+            <div class="note-box">
+                <p><i class="fas fa-exclamation-circle"></i> After payment, upload transaction screenshot below.</p>
+                <p><i class="fas fa-exclamation-circle"></i> Admin will verify and add balance within 1 hour.</p>
+                <p><i class="fas fa-exclamation-circle"></i> Keep transaction ID for reference.</p>
+                <p><i class="fas fa-exclamation-circle"></i> <strong style="color: #00ff88;">NEW:</strong> Deposit automatically appears in admin panel!</p>
+            </div>
+            
+            <!-- Amount Selection -->
+            <div class="amount-section">
+                <label class="amount-label">Deposit Amount (PKR)</label>
+                <div class="amount-input">
+                    <span class="currency">PKR</span>
+                    <input type="number" id="depositAmount" placeholder="0" min="100" max="50000" value="100">
+                </div>
+                <div class="quick-amounts">
+                    <button class="amount-btn" onclick="setAmount(100)">PKR 100</button>
+                    <button class="amount-btn" onclick="setAmount(500)">PKR 500</button>
+                    <button class="amount-btn" onclick="setAmount(1000)">PKR 1,000</button>
+                    <button class="amount-btn" onclick="setAmount(2000)">PKR 2,000</button>
+                </div>
+            </div>
+            
+            <!-- Upload Screenshot -->
+            <div class="upload-section">
+                <label class="upload-label">Upload Transaction Screenshot</label>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <div class="upload-text">Click to upload screenshot</div>
+                    <div class="upload-hint">PNG, JPG or JPEG (Max 5MB)</div>
+                    <input type="file" id="screenshotInput" accept="image/*">
+                </div>
+                
+                <div class="preview-box" id="previewBox" style="display: none;">
+                    <img id="previewImage" src="" alt="Preview">
+                    <button class="remove-btn" onclick="removeImage()">
+                        <i class="fas fa-trash"></i> Remove Image
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Submit Button -->
+            <button class="submit-btn" id="submitBtn" onclick="submitDeposit()">
+                <i class="fas fa-paper-plane"></i> SUBMIT DEPOSIT REQUEST
+            </button>
+            
+            <div class="back-link">
+                <a href="dashboard.html"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Your existing variables
+        let screenshotFile = null;
+        let screenshotData = null;
+        let db = null; // Firebase database
+        
+        // ====== YOUR FIREBASE CONFIG ======
+        const firebaseConfig = {
+            apiKey: "AIzaSyD67JoFIKJBGTPLeTyP_5ujlzUrdrjg1mU",
+            authDomain: "freefiretournament-ca6b8.firebaseapp.com",
+            databaseURL: "https://freefiretournament-ca6b8-default-rtdb.firebaseio.com",
+            projectId: "freefiretournament-ca6b8",
+            storageBucket: "freefiretournament-ca6b8.firebasestorage.app",
+            messagingSenderId: "300616210510",
+            appId: "1:300616210510:web:48a9b2479dedfc07948b1f",
+            measurementId: "G-EG656MC9SF"
+        };
+        
+        // Initialize Firebase when page loads
+        window.addEventListener('load', function() {
+            const userData = JSON.parse(localStorage.getItem('currentUser'));
+            if (!userData) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Initialize Firebase
+            try {
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                
+                // Update status
+                document.getElementById('statusText').textContent = '✅ Connected to database';
+                document.getElementById('firebaseStatus').className = 'firebase-status connected';
+                document.getElementById('firebaseStatus').style.display = 'block';
+                
+                console.log('Firebase connected successfully!');
+            } catch (error) {
+                console.error('Firebase error:', error);
+                document.getElementById('statusText').textContent = '⚠️ Using local storage only';
+                document.getElementById('firebaseStatus').className = 'firebase-status disconnected';
+                document.getElementById('firebaseStatus').style.display = 'block';
+            }
+        });
+        
+        // Set amount
+        function setAmount(amount) {
+            document.getElementById('depositAmount').value = amount;
+        }
+        
+        // Handle screenshot upload
+        document.getElementById('screenshotInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            if (file.size > 5 * 1024 * 1024) {
+                showMessage('File size too large! Max 5MB allowed.', 'error');
+                return;
+            }
+            
+            if (!file.type.match('image.*')) {
+                showMessage('Please upload an image file', 'error');
+                return;
+            }
+            
+            screenshotFile = file;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImage').src = e.target.result;
+                document.getElementById('previewBox').style.display = 'block';
+                screenshotData = e.target.result;
+                document.getElementById('submitBtn').disabled = false;
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        // Remove image
+        function removeImage() {
+            screenshotFile = null;
+            screenshotData = null;
+            document.getElementById('previewBox').style.display = 'none';
+            document.getElementById('screenshotInput').value = '';
+            document.getElementById('submitBtn').disabled = true;
+        }
+        
+        // ====== UPDATED: Submit deposit with Firebase ======
+        async function submitDeposit() {
+            const amount = parseFloat(document.getElementById('depositAmount').value);
+            
+            if (!amount || amount < 100 || amount > 50000) {
+                showMessage('Please enter amount between PKR 100 and 50,000', 'error');
+                return;
+            }
+            
+            if (!screenshotData) {
+                showMessage('Please upload transaction screenshot', 'error');
+                return;
+            }
+            
+            const userData = JSON.parse(localStorage.getItem('currentUser'));
+            if (!userData || !userData.username) {
+                showMessage('Please login first', 'error');
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('ffUsers')) || {};
+            const user = users[userData.username];
+            
+            // Create deposit data
+            const depositData = {
+                username: userData.username,
+                playerId: user ? user.playerId : 'N/A',
+                phone: user ? user.phone : 'N/A',
+                amount: amount,
+                screenshot: screenshotData,
+                transactionId: 'TX' + Date.now() + Math.random().toString(36).substr(2, 5).toUpperCase(),
+                date: new Date().toISOString(),
+                status: 'pending',
+                timestamp: new Date().toISOString(),
+                device: 'User_' + userData.username
+            };
+            
+            // Disable button to prevent double submission
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> SUBMITTING...';
+            
+            try {
+                let savedToFirebase = false;
+                
+                // ====== 1. TRY TO SAVE TO FIREBASE ======
+                if (db) {
+                    try {
+                        await db.collection('deposits').add(depositData);
+                        savedToFirebase = true;
+                        console.log('✅ Deposit saved to Firebase!');
+                    } catch (firebaseError) {
+                        console.error('Firebase save error:', firebaseError);
+                    }
+                }
+                
+                // ====== 2. ALWAYS SAVE TO LOCAL STORAGE (Backup) ======
+                let userDeposits = JSON.parse(localStorage.getItem('depositRequests')) || [];
+                depositData.id = 'local_' + Date.now();
+                userDeposits.push(depositData);
+                localStorage.setItem('depositRequests', JSON.stringify(userDeposits));
+                
+                // Show success message based on where it was saved
+                if (savedToFirebase) {
+                    showMessage(
+                        '✅ Deposit submitted successfully!<br>' +
+                        'Admin can see it immediately on any device.',
+                        'success'
+                    );
+                    
+                    // Clear form after successful submission
+                    document.getElementById('depositAmount').value = '100';
+                    removeImage();
+                    
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 3000);
+                    
+                } else {
+                    showMessage(
+                        '⚠️ Deposit saved locally.<br>' +
+                        'Please contact admin to manually add this deposit:<br>' +
+                        'Transaction ID: ' + depositData.transactionId,
+                        'success'
+                    );
+                    
+                    // Reset button
+                    setTimeout(() => {
+                        document.getElementById('submitBtn').disabled = false;
+                        document.getElementById('submitBtn').innerHTML = '<i class="fas fa-paper-plane"></i> SUBMIT DEPOSIT REQUEST';
+                    }, 3000);
+                }
+                
+            } catch (error) {
+                console.error('Submission error:', error);
+                showMessage('Error submitting deposit. Please try again.', 'error');
+                
+                // Reset button
+                document.getElementById('submitBtn').disabled = false;
+                document.getElementById('submitBtn').innerHTML = '<i class="fas fa-paper-plane"></i> SUBMIT DEPOSIT REQUEST';
+            }
+        }
+        
+        // Show message
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 8000);
+        }
+        
+        // Test Firebase connection
+        function testFirebase() {
+            if (db) {
+                console.log('Firebase is connected:', db);
+                return true;
+            } else {
+                console.log('Firebase not connected');
+                return false;
+            }
+        }
+    </script>
+</body>
+</html>

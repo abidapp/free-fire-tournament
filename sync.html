@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Data Sync</title>
+    <style>
+        body { 
+            background: #0a0a0a; 
+            color: white; 
+            font-family: Arial; 
+            padding: 20px; 
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { color: #00f0ff; text-align: center; }
+        .box { 
+            background: rgba(20, 20, 30, 0.9); 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin: 20px 0; 
+        }
+        textarea { 
+            width: 100%; 
+            height: 200px; 
+            background: #111; 
+            color: white; 
+            border: 2px solid #333; 
+            padding: 10px; 
+            font-family: monospace; 
+        }
+        button { 
+            background: #00ff88; 
+            color: black; 
+            border: none; 
+            padding: 15px 30px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            margin: 10px; 
+        }
+        .result { 
+            background: rgba(0, 255, 136, 0.1); 
+            padding: 15px; 
+            border-radius: 10px; 
+            margin-top: 20px; 
+            display: none; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 ADMIN DATA SYNC</h1>
+        
+        <div class="box">
+            <h2>Step 1: User Exports Data</h2>
+            <p>1. User submits deposit</p>
+            <p>2. User clicks "EXPORT DATA TO ADMIN" button</p>
+            <p>3. User copies the code and sends to you</p>
+        </div>
+        
+        <div class="box">
+            <h2>Step 2: Paste Code Here</h2>
+            <textarea id="importCode" placeholder="Paste the code from user here..."></textarea>
+            <button onclick="importData()">📥 IMPORT DEPOSITS</button>
+        </div>
+        
+        <div class="box">
+            <h2>Step 3: Check Imported Data</h2>
+            <button onclick="viewDeposits()">👁️ VIEW ALL DEPOSITS</button>
+            <button onclick="clearData()">🗑️ CLEAR ALL DATA</button>
+            
+            <div class="result" id="result">
+                <h3>Import Result:</h3>
+                <pre id="resultText"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Import data from user
+        function importData() {
+            const code = document.getElementById('importCode').value.trim();
+            if (!code) {
+                alert('Please paste the code from user');
+                return;
+            }
+            
+            try {
+                // Decode base64
+                const jsonString = decodeURIComponent(escape(atob(code)));
+                const importedData = JSON.parse(jsonString);
+                
+                if (!importedData.deposits || !Array.isArray(importedData.deposits)) {
+                    throw new Error('Invalid data format');
+                }
+                
+                // Get current admin deposits
+                let adminDeposits = JSON.parse(localStorage.getItem('adminImportedDeposits')) || [];
+                
+                // Add new deposits
+                importedData.deposits.forEach(newDeposit => {
+                    // Check if already exists
+                    const exists = adminDeposits.some(d => 
+                        d.transactionId === newDeposit.transactionId && 
+                        d.username === newDeposit.username
+                    );
+                    
+                    if (!exists) {
+                        // Mark as imported
+                        newDeposit.importedAt = new Date().toISOString();
+                        newDeposit.source = 'imported';
+                        adminDeposits.push(newDeposit);
+                    }
+                });
+                
+                // Save to admin storage
+                localStorage.setItem('adminImportedDeposits', JSON.stringify(adminDeposits));
+                
+                // Also save to main deposit requests (for admin panel)
+                let mainDeposits = JSON.parse(localStorage.getItem('depositRequests')) || [];
+                importedData.deposits.forEach(deposit => {
+                    const exists = mainDeposits.some(d => d.transactionId === deposit.transactionId);
+                    if (!exists) {
+                        mainDeposits.push(deposit);
+                    }
+                });
+                localStorage.setItem('depositRequests', JSON.stringify(mainDeposits));
+                
+                // Show result
+                document.getElementById('resultText').innerHTML = 
+                    `✅ SUCCESSFULLY IMPORTED ${importedData.deposits.length} DEPOSITS\n\n` +
+                    `From: ${importedData.device || 'User device'}\n` +
+                    `Time: ${new Date(importedData.timestamp).toLocaleString()}\n\n` +
+                    `Total deposits in admin panel: ${adminDeposits.length}\n\n` +
+                    `Go to adminpannel.html to see the imported deposits!`;
+                
+                document.getElementById('result').style.display = 'block';
+                
+            } catch (error) {
+                alert('❌ IMPORT ERROR: ' + error.message + '\n\nMake sure you copied the FULL code.');
+            }
+        }
+        
+        // View all deposits
+        function viewDeposits() {
+            const deposits = JSON.parse(localStorage.getItem('adminImportedDeposits')) || [];
+            const mainDeposits = JSON.parse(localStorage.getItem('depositRequests')) || [];
+            
+            let result = `📊 DEPOSIT DATABASE STATUS:\n\n`;
+            result += `Imported Deposits: ${deposits.length}\n`;
+            result += `Main Deposits: ${mainDeposits.length}\n\n`;
+            
+            if (deposits.length > 0) {
+                result += `RECENT DEPOSITS:\n`;
+                result += `----------------\n`;
+                
+                deposits.slice(-5).forEach((deposit, i) => {
+                    result += `${i+1}. ${deposit.username} - PKR ${deposit.amount}\n`;
+                    result += `   Status: ${deposit.status || 'pending'}\n`;
+                    result += `   ID: ${deposit.transactionId}\n`;
+                    result += `   Date: ${new Date(deposit.date).toLocaleDateString()}\n`;
+                    result += `   --------------------\n`;
+                });
+            }
+            
+            document.getElementById('resultText').textContent = result;
+            document.getElementById('result').style.display = 'block';
+        }
+        
+        // Clear data (if needed)
+        function clearData() {
+            if (confirm('Are you sure? This will delete ALL imported deposits.')) {
+                localStorage.removeItem('adminImportedDeposits');
+                document.getElementById('resultText').textContent = '✅ All imported data cleared!';
+                document.getElementById('result').style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>

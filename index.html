@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Fire Tournament - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background: #0a0a0a;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+        
+        .login-box {
+            background: rgba(20, 20, 30, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid #ff4655;
+            box-shadow: 0 0 30px rgba(255, 70, 85, 0.3);
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            color: #ff4655;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .logo p {
+            color: #00f0ff;
+            font-size: 14px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #333;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        .tab-btn.active {
+            color: #ff4655;
+            border-bottom: 3px solid #ff4655;
+        }
+        
+        .form-container {
+            display: none;
+        }
+        
+        .form-container.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #00f0ff;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
+            border-radius: 5px;
+            color: white;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .btn-login {
+            background: #ff4655;
+            color: white;
+        }
+        
+        .btn-login:hover {
+            background: #ff3344;
+        }
+        
+        .btn-register {
+            background: #00ff88;
+            color: black;
+        }
+        
+        .btn-register:hover {
+            background: #00cc66;
+        }
+        
+        .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+            display: none;
+        }
+        
+        .message.success {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid #00ff88;
+            display: block;
+        }
+        
+        .message.error {
+            background: rgba(255, 70, 85, 0.2);
+            color: #ff4655;
+            border: 1px solid #ff4655;
+            display: block;
+        }
+        
+        .message.info {
+            background: rgba(0, 240, 255, 0.2);
+            color: #00f0ff;
+            border: 1px solid #00f0ff;
+            display: block;
+        }
+        
+        .link {
+            text-align: center;
+            margin-top: 15px;
+            color: #888;
+        }
+        
+        .link a {
+            color: #00f0ff;
+            cursor: pointer;
+        }
+        
+        .admin-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+        
+        .admin-link a {
+            color: #ffaa00;
+            text-decoration: none;
+        }
+        
+        .firebase-status {
+            background: rgba(0, 240, 255, 0.1);
+            padding: 8px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 12px;
+            color: #00f0ff;
+            display: none;
+        }
+        
+        .firebase-status.connected {
+            background: rgba(0, 255, 136, 0.1);
+            color: #00ff88;
+        }
+    </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <div class="logo">
+                <h1>FREE FIRE TOURNAMENT</h1>
+                <p>Battle For Glory & Rewards</p>
+            </div>
+            
+            <!-- Firebase Status -->
+            <div class="firebase-status" id="firebaseStatus">
+                <i class="fas fa-database"></i> 
+                <span id="statusText">Connecting to server...</span>
+            </div>
+            
+            <div class="tabs">
+                <button class="tab-btn active" onclick="showLogin()">LOGIN</button>
+                <button class="tab-btn" onclick="showRegister()">REGISTER</button>
+            </div>
+            
+            <div class="message" id="message"></div>
+            
+            <!-- Login Form -->
+            <div id="loginForm" class="form-container active">
+                <form id="loginFormSubmit">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="username" placeholder="Enter username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="password" placeholder="Enter password" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-login">LOGIN</button>
+                </form>
+                
+                <div class="link">
+                    <p>Don't have account? <a onclick="showRegister()">Register Here</a></p>
+                </div>
+            </div>
+            
+            <!-- Register Form -->
+            <div id="registerForm" class="form-container">
+                <form id="registerFormSubmit">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="regUsername" placeholder="Choose username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="regPassword" placeholder="Choose password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input type="password" id="regConfirmPassword" placeholder="Confirm password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Free Fire ID</label>
+                        <input type="text" id="regPlayerId" placeholder="Enter FF ID" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="regPhone" placeholder="0311-953990" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-register">REGISTER</button>
+                </form>
+                
+                <div class="link">
+                    <p>Already have account? <a onclick="showLogin()">Login Here</a></p>
+                </div>
+            </div>
+            
+            <div class="admin-link">
+                <a href="admin-login.html">Admin Access</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ====== FIREBASE CONFIGURATION ======
+        const firebaseConfig = {
+            apiKey: "AIzaSyD67JoFIKJBGTPLeTyP_5ujlzUrdrjg1mU",
+            authDomain: "freefiretournament-ca6b8.firebaseapp.com",
+            databaseURL: "https://freefiretournament-ca6b8-default-rtdb.firebaseio.com",
+            projectId: "freefiretournament-ca6b8",
+            storageBucket: "freefiretournament-ca6b8.firebasestorage.app",
+            messagingSenderId: "300616210510",
+            appId: "1:300616210510:web:48a9b2479dedfc07948b1f",
+            measurementId: "G-EG656MC9SF"
+        };
+        
+        let db = null;
+        let firebaseConnected = false;
+        
+        // Initialize Firebase
+        function initializeFirebase() {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                firebaseConnected = true;
+                
+                document.getElementById('statusText').textContent = '✅ Server connected - Multi-device login active';
+                document.getElementById('firebaseStatus').className = 'firebase-status connected';
+                document.getElementById('firebaseStatus').style.display = 'block';
+                
+                console.log('Firebase connected for login system');
+                
+            } catch (error) {
+                console.error('Firebase initialization error:', error);
+                firebaseConnected = false;
+                document.getElementById('statusText').textContent = '⚠️ Server offline - Local login only';
+                document.getElementById('firebaseStatus').style.display = 'block';
+            }
+        }
+        
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            initializeFirebase();
+            
+            // Check if already logged in
+            if (localStorage.getItem('currentUser')) {
+                showMessage('Already logged in. Redirecting...', 'info');
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1000);
+            }
+        });
+
+        // Tab Functions
+        function showLogin() {
+            document.getElementById('loginForm').classList.add('active');
+            document.getElementById('registerForm').classList.remove('active');
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            document.querySelectorAll('.tab-btn')[1].classList.remove('active');
+            document.getElementById('message').style.display = 'none';
+        }
+        
+        function showRegister() {
+            document.getElementById('loginForm').classList.remove('active');
+            document.getElementById('registerForm').classList.add('active');
+            document.querySelectorAll('.tab-btn')[0].classList.remove('active');
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            document.getElementById('message').style.display = 'none';
+        }
+
+        // Show Message
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // ====== REGISTER FUNCTION (MULTI-DEVICE FIXED) ======
+        document.getElementById('registerFormSubmit').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+            const confirmPassword = document.getElementById('regConfirmPassword').value.trim();
+            const playerId = document.getElementById('regPlayerId').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            
+            // Validation
+            if (!username || !password || !confirmPassword || !playerId || !phone) {
+                showMessage('Please fill all fields', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showMessage('Passwords do not match', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showMessage('Password must be at least 6 characters', 'error');
+                return;
+            }
+            
+            if (!phone.match(/^03\d{9}$/)) {
+                showMessage('Please enter valid 11-digit phone number', 'error');
+                return;
+            }
+            
+            try {
+                showMessage('Creating account...', 'info');
+                
+                let userExists = false;
+                
+                // 1. Check in Firebase first
+                if (firebaseConnected && db) {
+                    try {
+                        const userDoc = await db.collection('users').doc(username).get();
+                        if (userDoc.exists) {
+                            userExists = true;
+                        }
+                    } catch (firebaseError) {
+                        console.log('Firebase check error, using local storage');
+                    }
+                }
+                
+                // 2. Check in localStorage
+                if (!userExists) {
+                    const users = JSON.parse(localStorage.getItem('ffUsers')) || {};
+                    if (users[username]) {
+                        userExists = true;
+                    }
+                }
+                
+                if (userExists) {
+                    showMessage('Username already exists', 'error');
+                    return;
+                }
+                
+                // Create user data
+                const userData = {
+                    username: username,
+                    password: password,
+                    playerId: playerId,
+                    phone: phone,
+                    balance: 0,
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    lastLogin: new Date().toISOString()
+                };
+                
+                // 3. Save to Firebase (Primary)
+                if (firebaseConnected && db) {
+                    try {
+                        await db.collection('users').doc(username).set(userData);
+                        console.log('User saved to Firebase:', username);
+                    } catch (firebaseError) {
+                        console.error('Firebase save error:', firebaseError);
+                        // Continue with local storage if Firebase fails
+                    }
+                }
+                
+                // 4. Save to Local Storage (Backup)
+                const users = JSON.parse(localStorage.getItem('ffUsers')) || {};
+                users[username] = userData;
+                localStorage.setItem('ffUsers', JSON.stringify(users));
+                
+                showMessage('Account created successfully! You can login from any device.', 'success');
+                
+                // Auto fill login form
+                document.getElementById('username').value = username;
+                document.getElementById('password').value = password;
+                
+                // Switch to login
+                showLogin();
+                
+            } catch (error) {
+                console.error('Registration error:', error);
+                showMessage('Error creating account. Please try again.', 'error');
+            }
+        });
+
+        // ====== LOGIN FUNCTION (MULTI-DEVICE FIXED) ======
+        document.getElementById('loginFormSubmit').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (!username || !password) {
+                showMessage('Please enter username and password', 'error');
+                return;
+            }
+            
+            try {
+                showMessage('Checking login...', 'info');
+                
+                let userData = null;
+                let source = '';
+                
+                // ====== METHOD 1: CHECK FIREBASE FIRST ======
+                if (firebaseConnected && db) {
+                    try {
+                        const userDoc = await db.collection('users').doc(username).get();
+                        
+                        if (userDoc.exists) {
+                            const firebaseUser = userDoc.data();
+                            
+                            if (firebaseUser.password === password) {
+                                if (firebaseUser.status !== 'active') {
+                                    showMessage('Account is deactivated. Contact admin.', 'error');
+                                    return;
+                                }
+                                
+                                userData = firebaseUser;
+                                source = 'Firebase';
+                                
+                                // Update last login in Firebase
+                                await db.collection('users').doc(username).update({
+                                    lastLogin: new Date().toISOString()
+                                });
+                                
+                                console.log('User logged in from Firebase');
+                            }
+                        }
+                    } catch (firebaseError) {
+                        console.log('Firebase login error, trying local storage:', firebaseError);
+                    }
+                }
+                
+                // ====== METHOD 2: CHECK LOCAL STORAGE ======
+                if (!userData) {
+                    const users = JSON.parse(localStorage.getItem('ffUsers')) || {};
+                    const localUser = users[username];
+                    
+                    if (localUser && localUser.password === password) {
+                        if (localUser.status !== 'active') {
+                            showMessage('Account is deactivated. Contact admin.', 'error');
+                            return;
+                        }
+                        
+                        userData = localUser;
+                        source = 'Local Storage';
+                        
+                        // Update last login in localStorage
+                        users[username].lastLogin = new Date().toISOString();
+                        localStorage.setItem('ffUsers', JSON.stringify(users));
+                        
+                        // Sync to Firebase for future logins
+                        if (firebaseConnected && db) {
+                            try {
+                                await db.collection('users').doc(username).set(userData);
+                                console.log('User data synced to Firebase');
+                            } catch (syncError) {
+                                console.log('Sync to Firebase failed:', syncError);
+                            }
+                        }
+                        
+                        console.log('User logged in from Local Storage');
+                    }
+                }
+                
+                // ====== METHOD 3: CHECK FIREBASE FOR OLD USERS ======
+                if (!userData && firebaseConnected && db) {
+                    try {
+                        // Try to find user by phone or playerId
+                        const usersSnapshot = await db.collection('users')
+                            .where('phone', '==', username)
+                            .limit(1)
+                            .get();
+                        
+                        if (!usersSnapshot.empty) {
+                            usersSnapshot.forEach(doc => {
+                                const firebaseUser = doc.data();
+                                if (firebaseUser.password === password) {
+                                    userData = firebaseUser;
+                                    source = 'Firebase (by phone)';
+                                }
+                            });
+                        }
+                    } catch (searchError) {
+                        console.log('User search error:', searchError);
+                    }
+                }
+                
+                // ====== NO USER FOUND ======
+                if (!userData) {
+                    showMessage('Invalid username or password', 'error');
+                    return;
+                }
+                
+                // ====== LOGIN SUCCESSFUL ======
+                console.log(`Login successful from ${source}:`, username);
+                
+                // Prepare user session data
+                const currentUser = {
+                    username: username,
+                    playerId: userData.playerId || '',
+                    phone: userData.phone || '',
+                    balance: userData.balance || 0,
+                    status: userData.status || 'active',
+                    lastLogin: new Date().toISOString(),
+                    loginSource: source
+                };
+                
+                // Save to localStorage
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                // Show success message based on source
+                if (source.includes('Firebase')) {
+                    showMessage('✅ Login successful! Multi-device access active.', 'success');
+                } else {
+                    showMessage('✅ Login successful! (Local device)', 'success');
+                }
+                
+                // Redirect to dashboard
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage('Login failed. Please try again.', 'error');
+            }
+        });
+
+        // Add FontAwesome for icons
+        const faScript = document.createElement('script');
+        faScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js';
+        document.head.appendChild(faScript);
+        
+        // Add FontAwesome CSS
+        const faStyle = document.createElement('link');
+        faStyle.rel = 'stylesheet';
+        faStyle.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+        document.head.appendChild(faStyle);
+    </script>
+</body>
+</html>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournaments - Free Fire Tournament</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background: #0a0a0a;
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: #111;
+            padding: 20px;
+            border-bottom: 2px solid #ff4655;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            color: #ff4655;
+            font-size: 24px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .user-name {
+            color: #00f0ff;
+            font-weight: bold;
+        }
+        
+        .btn-back {
+            background: #00f0ff;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+        
+        .tournaments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        .tournament-card {
+            background: rgba(20, 20, 30, 0.9);
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+        
+        .tournament-card:hover {
+            border-color: #ff4655;
+            transform: translateY(-5px);
+        }
+        
+        .tournament-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .tournament-header h3 {
+            color: #ff4655;
+            font-size: 20px;
+        }
+        
+        .tournament-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-upcoming {
+            background: rgba(255, 170, 0, 0.2);
+            color: #ffaa00;
+            border: 1px solid #ffaa00;
+        }
+        
+        .status-active {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid #00ff88;
+        }
+        
+        .tournament-details {
+            margin-bottom: 25px;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            color: #aaa;
+        }
+        
+        .detail-value {
+            color: white;
+            font-weight: bold;
+        }
+        
+        .prize-pool {
+            color: #00ff88 !important;
+        }
+        
+        .entry-fee {
+            color: #ffaa00 !important;
+        }
+        
+        .time-info {
+            color: #00f0ff !important;
+        }
+        
+        .players-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .players-count {
+            color: #aaa;
+            font-size: 14px;
+        }
+        
+        .players-progress {
+            width: 100%;
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff4655, #ff6b7a);
+        }
+        
+        .btn-join {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ff4655, #ff6b7a);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-join:hover {
+            background: linear-gradient(135deg, #ff6b7a, #ff4655);
+            transform: translateY(-3px);
+        }
+        
+        .btn-join:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #aaa;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .message.success {
+            background: rgba(0, 255, 136, 0.1);
+            color: #00ff88;
+            border: 1px solid #00ff88;
+            display: block;
+        }
+        
+        .message.error {
+            background: rgba(255, 70, 85, 0.1);
+            color: #ff4655;
+            border: 1px solid #ff4655;
+            display: block;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">
+            <h1><i class="fas fa-trophy"></i> TOURNAMENTS</h1>
+        </div>
+        <div class="user-info">
+            <div class="user-name" id="userName">Player</div>
+            <a href="dashboard.html" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Message -->
+        <div class="message" id="message"></div>
+        
+        <h2 style="color: #ffaa00; margin-bottom: 30px; text-align: center;">AVAILABLE TOURNAMENTS</h2>
+        
+        <div class="tournaments-grid" id="tournamentsList">
+            <!-- Tournaments will be loaded here -->
+            <div class="empty-state">
+                <i class="fas fa-trophy" style="font-size: 48px; margin-bottom: 20px;"></i>
+                <h3>No tournaments available</h3>
+                <p>Check back later for upcoming tournaments</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load user data and tournaments
+        window.addEventListener('load', function() {
+            const userData = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (!userData) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Display user info
+            document.getElementById('userName').textContent = userData.username;
+            
+            // Load tournaments
+            loadTournaments(userData);
+        });
+
+        // Load tournaments
+        function loadTournaments(userData) {
+            const tournaments = JSON.parse(localStorage.getItem('tournaments')) || [];
+            const tournamentsList = document.getElementById('tournamentsList');
+            
+            if (tournaments.length === 0) {
+                tournamentsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-trophy" style="font-size: 48px; margin-bottom: 20px;"></i>
+                        <h3>No tournaments available</h3>
+                        <p>Check back later for upcoming tournaments</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            tournamentsList.innerHTML = '';
+            
+            // Sort tournaments: active first, then upcoming
+            tournaments.sort((a, b) => {
+                if (a.status === 'active' && b.status !== 'active') return -1;
+                if (a.status !== 'active' && b.status === 'active') return 1;
+                return new Date(a.startTime) - new Date(b.startTime);
+            });
+            
+            tournaments.forEach((tournament, index) => {
+                // Calculate registered players
+                const registeredPlayers = tournament.registeredPlayers ? tournament.registeredPlayers.length : 0;
+                const progressPercentage = (registeredPlayers / tournament.maxPlayers) * 100;
+                
+                // Format start time
+                const startTime = new Date(tournament.startTime || tournament.createdAt);
+                const formattedTime = startTime.toLocaleString();
+                
+                // Check if user already joined
+                const hasJoined = tournament.registeredPlayers && 
+                                 tournament.registeredPlayers.includes(userData.username);
+                
+                const tournamentCard = document.createElement('div');
+                tournamentCard.className = 'tournament-card';
+                tournamentCard.innerHTML = `
+                    <div class="tournament-header">
+                        <h3>${tournament.name}</h3>
+                        <span class="tournament-status status-${tournament.status}">
+                            ${tournament.status.toUpperCase()}
+                        </span>
+                    </div>
+                    
+                    <div class="tournament-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Prize Pool:</span>
+                            <span class="detail-value prize-pool">PKR ${tournament.prizePool}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Entry Fee:</span>
+                            <span class="detail-value entry-fee">PKR ${tournament.entryFee}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Start Time:</span>
+                            <span class="detail-value time-info">${formattedTime}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Duration:</span>
+                            <span class="detail-value">${tournament.duration || '1 Hour'}</span>
+                        </div>
+                        ${tournament.description ? `
+                        <div class="detail-item">
+                            <span class="detail-label">Description:</span>
+                            <span class="detail-value">${tournament.description}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="players-info">
+                        <div class="players-count">${registeredPlayers} / ${tournament.maxPlayers} Players</div>
+                        <div class="players-count">Slots: ${tournament.maxPlayers - registeredPlayers} Left</div>
+                    </div>
+                    
+                    <div class="players-progress">
+                        <div class="progress-bar" style="width: ${progressPercentage}%"></div>
+                    </div>
+                    
+                    <button class="btn-join" 
+                            onclick="joinTournament('${index}', ${tournament.entryFee}, '${tournament.name}')"
+                            ${hasJoined ? 'disabled' : ''}
+                            ${userData.balance < tournament.entryFee ? 'disabled' : ''}
+                            ${tournament.status !== 'active' ? 'disabled' : ''}
+                            ${registeredPlayers >= tournament.maxPlayers ? 'disabled' : ''}>
+                        ${hasJoined ? 'ALREADY JOINED' : 
+                          userData.balance < tournament.entryFee ? 'INSUFFICIENT BALANCE' : 
+                          tournament.status !== 'active' ? 'COMING SOON' :
+                          'JOIN TOURNAMENT'}
+                    </button>
+                `;
+                tournamentsList.appendChild(tournamentCard);
+            });
+        }
+
+        // Join tournament
+        function joinTournament(tournamentIndex, entryFee, tournamentName) {
+            const userData = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (!userData) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Check balance
+            if (userData.balance < entryFee) {
+                showMessage(`Insufficient balance! Need PKR ${entryFee} to join.`, 'error');
+                return;
+            }
+            
+            // Get tournaments
+            let tournaments = JSON.parse(localStorage.getItem('tournaments')) || [];
+            const tournament = tournaments[tournamentIndex];
+            
+            // Check if already full
+            const registeredPlayers = tournament.registeredPlayers ? tournament.registeredPlayers.length : 0;
+            if (registeredPlayers >= tournament.maxPlayers) {
+                showMessage('Tournament is already full!', 'error');
+                return;
+            }
+            
+            // Check if already joined
+            if (tournament.registeredPlayers && tournament.registeredPlayers.includes(userData.username)) {
+                showMessage('You have already joined this tournament!', 'error');
+                return;
+            }
+            
+            // Deduct entry fee from user balance
+            let users = JSON.parse(localStorage.getItem('ffUsers')) || {};
+            if (users[userData.username]) {
+                users[userData.username].balance = (users[userData.username].balance || 0) - entryFee;
+                localStorage.setItem('ffUsers', JSON.stringify(users));
+                
+                // Update current user
+                userData.balance = users[userData.username].balance;
+                localStorage.setItem('currentUser', JSON.stringify(userData));
+            }
+            
+            // Add user to tournament registered players
+            if (!tournament.registeredPlayers) {
+                tournament.registeredPlayers = [];
+            }
+            tournament.registeredPlayers.push(userData.username);
+            tournaments[tournamentIndex] = tournament;
+            localStorage.setItem('tournaments', JSON.stringify(tournaments));
+            
+            // Save transaction
+            const transaction = {
+                type: 'Tournament Entry',
+                amount: entryFee,
+                tournamentName: tournamentName,
+                date: new Date().toISOString(),
+                status: 'completed'
+            };
+            
+            let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+            transactions.push(transaction);
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+            
+            showMessage(`Successfully joined "${tournamentName}"! PKR ${entryFee} deducted from your balance.`, 'success');
+            
+            // Reload tournaments after 2 seconds
+            setTimeout(() => {
+                loadTournaments(userData);
+            }, 2000);
+        }
+
+        // Show message
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

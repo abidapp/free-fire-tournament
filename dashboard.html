@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Free Fire Tournament</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background: #0a0a0a;
+            color: white;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            background: #111;
+            padding: 20px;
+            border-bottom: 2px solid #ff4655;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            color: #ff4655;
+            font-size: 24px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .user-name {
+            color: #00f0ff;
+            font-weight: bold;
+        }
+        
+        .btn-logout {
+            background: #ff4655;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+        
+        /* Balance Card */
+        .balance-card {
+            background: rgba(255, 70, 85, 0.1);
+            border: 1px solid #ff4655;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .balance-label {
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .balance-amount {
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .balance-sub {
+            color: #00f0ff;
+            font-size: 14px;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .action-card {
+            background: rgba(20, 20, 30, 0.9);
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .action-card:hover {
+            border-color: #ff4655;
+            transform: translateY(-5px);
+        }
+        
+        .action-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .deposit-card .action-icon {
+            color: #00ff88;
+        }
+        
+        .withdraw-card .action-icon {
+            color: #ffaa00;
+        }
+        
+        .action-card h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+        
+        .action-card p {
+            color: #aaa;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .action-link {
+            display: block;
+            text-decoration: none;
+        }
+        
+        .btn-action {
+            background: #ff4655;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        
+        .btn-action:hover {
+            background: #ff3344;
+            transform: translateY(-3px);
+        }
+        
+        /* Tournament Grid */
+        .tournaments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .tournament-card {
+            background: rgba(20, 20, 30, 0.9);
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+        
+        .tournament-card:hover {
+            border-color: #ff4655;
+            transform: translateY(-5px);
+        }
+        
+        .tournament-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .tournament-header h3 {
+            color: #ff4655;
+            font-size: 20px;
+        }
+        
+        .tournament-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-upcoming {
+            background: rgba(255, 170, 0, 0.2);
+            color: #ffaa00;
+            border: 1px solid #ffaa00;
+        }
+        
+        .status-active {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid #00ff88;
+        }
+        
+        .tournament-details {
+            margin-bottom: 25px;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            color: #aaa;
+        }
+        
+        .detail-value {
+            color: white;
+            font-weight: bold;
+        }
+        
+        .prize-pool {
+            color: #00ff88 !important;
+        }
+        
+        .entry-fee {
+            color: #ffaa00 !important;
+        }
+        
+        .time-info {
+            color: #00f0ff !important;
+        }
+        
+        .players-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .players-count {
+            color: #aaa;
+            font-size: 14px;
+        }
+        
+        .players-progress {
+            width: 100%;
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff4655, #ff6b7a);
+        }
+        
+        .btn-join-tournament {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ff4655, #ff6b7a);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-join-tournament:hover {
+            background: linear-gradient(135deg, #ff6b7a, #ff4655);
+            transform: translateY(-3px);
+        }
+        
+        .btn-join-tournament:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #aaa;
+        }
+        
+        /* Support Section */
+        .support-fixed {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #25D366;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .support-fixed a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        /* Message */
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .message.success {
+            background: rgba(0, 255, 136, 0.1);
+            color: #00ff88;
+            border: 1px solid #00ff88;
+            display: block;
+        }
+        
+        .message.error {
+            background: rgba(255, 70, 85, 0.1);
+            color: #ff4655;
+            border: 1px solid #ff4655;
+            display: block;
+        }
+        
+        /* Admin Access */
+        .admin-access {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+        }
+        
+        .admin-link {
+            color: #ffaa00;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        
+        .section-title {
+            color: #ffaa00;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 24px;
+        }
+        
+        /* Secret Info for Joined Tournaments */
+        .secret-info {
+            background: rgba(0, 240, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #00f0ff;
+        }
+        
+        .secret-label {
+            color: #00ff88;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .secret-value {
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            letter-spacing: 2px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-family: monospace;
+        }
+        
+        .joined-badge {
+            background: #00ff88;
+            color: black;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        
+        /* Description Box - SHOWS ONLY FOR JOINED */
+        .description-box {
+            background: rgba(255, 170, 0, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #ffaa00;
+        }
+        
+        .description-label {
+            color: #ffaa00;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .description-text {
+            color: #ddd;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        /* Rules Box - SHOWS ONLY FOR JOINED */
+        .rules-box {
+            background: rgba(255, 70, 85, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #ff4655;
+        }
+        
+        .rules-label {
+            color: #ff4655;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .rules-text {
+            color: #ddd;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">
+            <h1><i class="fas fa-fire"></i> FREE FIRE TOURNAMENT</h1>
+        </div>
+        <div class="user-info">
+            <div class="user-name" id="userName">Player</div>
+            <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> LOGOUT</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Message -->
+        <div class="message" id="message"></div>
+        
+        <!-- Balance Card -->
+        <div class="balance-card">
+            <div class="balance-label">YOUR BALANCE</div>
+            <div class="balance-amount" id="userBalance">PKR 0</div>
+            <div class="balance-sub">Available for tournaments & withdrawals</div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <!-- Deposit Card -->
+            <div class="action-card deposit-card">
+                <div class="action-icon">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <h3>DEPOSIT FUNDS</h3>
+                <p>Add money to your account to join tournaments. Upload transaction screenshot after payment.</p>
+                <a href="deposit.html" class="action-link">
+                    <button class="btn-action">
+                        <i class="fas fa-plus-circle"></i> DEPOSIT NOW
+                    </button>
+                </a>
+            </div>
+            
+            <!-- Withdraw Card -->
+            <div class="action-card withdraw-card">
+                <div class="action-icon">
+                    <i class="fas fa-university"></i>
+                </div>
+                <h3>WITHDRAW EARNINGS</h3>
+                <p>Withdraw your tournament winnings to JazzCash or EasyPaisa account.</p>
+                <a href="withdraw.html" class="action-link">
+                    <button class="btn-action">
+                        <i class="fas fa-hand-holding-usd"></i> WITHDRAW NOW
+                    </button>
+                </a>
+            </div>
+        </div>
+
+        <!-- Tournament Section -->
+        <h2 class="section-title">
+            <i class="fas fa-trophy"></i> AVAILABLE TOURNAMENTS
+        </h2>
+        
+        <div class="tournaments-grid" id="tournamentsList">
+            <!-- Tournaments will be loaded here -->
+            <div class="empty-state">
+                <i class="fas fa-trophy" style="font-size: 48px; margin-bottom: 20px;"></i>
+                <h3>No tournaments available</h3>
+                <p>Check back later for upcoming tournaments</p>
+            </div>
+        </div>
+
+        <!-- Admin Access -->
+        <div class="admin-access">
+            <a href="admin-login.html" class="admin-link">
+                <i class="fas fa-user-cog"></i> Admin Access
+            </a>
+        </div>
+    </div>
+
+    <!-- Fixed Support -->
+    <div class="support-fixed">
+        <a href="https://wa.me/923119537990" target="_blank">
+            <i class="fab fa-whatsapp"></i> WhatsApp Support<br>
+            0311-953990
+        </a>
+    </div>
+
+    <script>
+        // Load user data
+        window.addEventListener('load', function() {
+            const userData = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (!userData) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Display user info
+            document.getElementById('userName').textContent = userData.username;
+            document.getElementById('userBalance').textContent = `PKR ${userData.balance || 0}`;
+            
+            // Load tournaments
+            loadTournaments(userData);
+        });
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        // Load tournaments
+        function loadTournaments(userData) {
+            const tournaments = JSON.parse(localStorage.getItem('tournaments')) || [];
+            const tournamentsList = document.getElementById('tournamentsList');
+            
+            if (tournaments.length === 0) {
+                tournamentsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-trophy" style="font-size: 48px; margin-bottom: 20px;"></i>
+                        <h3>No tournaments available</h3>
+                        <p>Check back later for upcoming tournaments</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            tournamentsList.innerHTML = '';
+            
+            // Sort tournaments: active first, then upcoming
+            tournaments.sort((a, b) => {
+                if (a.status === 'active' && b.status !== 'active') return -1;
+                if (a.status !== 'active' && b.status === 'active') return 1;
+                return new Date(a.startTime) - new Date(b.startTime);
+            });
+            
+            tournaments.forEach((tournament, index) => {
+                // Calculate registered players
+                const registeredPlayers = tournament.registeredPlayers ? tournament.registeredPlayers.length : 0;
+                const progressPercentage = (registeredPlayers / tournament.maxPlayers) * 100;
+                
+                // Format start time
+                const startTime = new Date(tournament.startTime || tournament.createdAt);
+                const formattedTime = startTime.toLocaleString();
+                
+                // Check if user already joined
+                const hasJoined = tournament.registeredPlayers && 
+                                 tournament.registeredPlayers.includes(userData.username);
+                
+                const tournamentCard = document.createElement('div');
+                tournamentCard.className = 'tournament-card';
+                
+                // IF USER HAS JOINED - SHOW ALL DETAILS
+                if (hasJoined) {
+                    tournamentCard.innerHTML = `
+                        <div class="tournament-header">
+                            <h3><i class="fas fa-user-check"></i> ${tournament.name}</h3>
+                            <span class="joined-badge">JOINED</span>
+                        </div>
+                        
+                        <div class="tournament-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Entry Fee Paid:</span>
+                                <span class="detail-value entry-fee">PKR ${tournament.entryFee}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Prize Pool:</span>
+                                <span class="detail-value prize-pool">PKR ${tournament.prizePool}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Start Time:</span>
+                                <span class="detail-value time-info">${formattedTime}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Duration:</span>
+                                <span class="detail-value">${tournament.duration || '1 Hour'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Players Joined:</span>
+                                <span class="detail-value">${registeredPlayers}/${tournament.maxPlayers}</span>
+                            </div>
+                        </div>
+                        
+                        ${tournament.description ? `
+                        <div class="description-box">
+                            <div class="description-label"><i class="fas fa-info-circle"></i> Description:</div>
+                            <div class="description-text">${tournament.description}</div>
+                        </div>
+                        ` : ''}
+                        
+                        ${tournament.rules ? `
+                        <div class="rules-box">
+                            <div class="rules-label"><i class="fas fa-gavel"></i> Rules:</div>
+                            <div class="rules-text">${tournament.rules}</div>
+                        </div>
+                        ` : ''}
+                        
+                        ${tournament.roomId ? `
+                        <div class="secret-info">
+                            <div class="secret-label"><i class="fas fa-door-closed"></i> Room ID:</div>
+                            <div class="secret-value">${tournament.roomId}</div>
+                        </div>
+                        ` : ''}
+                        
+                        ${tournament.roomPassword ? `
+                        <div class="secret-info">
+                            <div class="secret-label"><i class="fas fa-key"></i> Room Password:</div>
+                            <div class="secret-value">${tournament.roomPassword}</div>
+                        </div>
+                        ` : ''}
+                        
+                        <button class="btn-join-tournament" disabled style="background: #00ff88; color: black;">
+                            <i class="fas fa-check-circle"></i> YOU HAVE JOINED
+                        </button>
+                    `;
+                } 
+                // IF USER HAS NOT JOINED - SHOW BASIC INFO ONLY (NO DESCRIPTION)
+                else {
+                    tournamentCard.innerHTML = `
+                        <div class="tournament-header">
+                            <h3>${tournament.name}</h3>
+                            <span class="tournament-status status-${tournament.status}">
+                                ${tournament.status.toUpperCase()}
+                            </span>
+                        </div>
+                        
+                        <div class="tournament-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Prize Pool:</span>
+                                <span class="detail-value prize-pool">PKR ${tournament.prizePool}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Entry Fee:</span>
+                                <span class="detail-value entry-fee">PKR ${tournament.entryFee}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Start Time:</span>
+                                <span class="detail-value time-info">${formattedTime}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Duration:</span>
+                                <span class="detail-value">${tournament.duration || '1 Hour'}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="players-info">
+                            <div class="players-count">${registeredPlayers} / ${tournament.maxPlayers} Players</div>
+                            <div class="players-count">Slots: ${tournament.maxPlayers - registeredPlayers} Left</div>
+                        </div>
+                        
+                        <div class="players-progress">
+                            <div class="progress-bar" style="width: ${progressPercentage}%"></div>
+                        </div>
+                        
+                        <button class="btn-join-tournament" 
+                                onclick="joinTournament('${index}', ${tournament.entryFee}, '${tournament.name}')"
+                                ${userData.balance < tournament.entryFee ? 'disabled' : ''}
+                                ${tournament.status !== 'active' ? 'disabled' : ''}
+                                ${registeredPlayers >= tournament.maxPlayers ? 'disabled' : ''}>
+                            ${userData.balance < tournament.entryFee ? 'INSUFFICIENT BALANCE' : 
+                              tournament.status !== 'active' ? 'COMING SOON' :
+                              'JOIN TOURNAMENT'}
+                        </button>
+                    `;
+                }
+                tournamentsList.appendChild(tournamentCard);
+            });
+        }
+
+        // Join tournament
+        function joinTournament(tournamentIndex, entryFee, tournamentName) {
+            const userData = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (!userData) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Check balance
+            if (userData.balance < entryFee) {
+                showMessage(`Insufficient balance! Need PKR ${entryFee} to join.`, 'error');
+                return;
+            }
+            
+            // Get tournaments
+            let tournaments = JSON.parse(localStorage.getItem('tournaments')) || [];
+            const tournament = tournaments[tournamentIndex];
+            
+            // Check if already full
+            const registeredPlayers = tournament.registeredPlayers ? tournament.registeredPlayers.length : 0;
+            if (registeredPlayers >= tournament.maxPlayers) {
+                showMessage('Tournament is already full!', 'error');
+                return;
+            }
+            
+            // Check if already joined
+            if (tournament.registeredPlayers && tournament.registeredPlayers.includes(userData.username)) {
+                showMessage('You have already joined this tournament!', 'error');
+                return;
+            }
+            
+            // Deduct entry fee from user balance
+            let users = JSON.parse(localStorage.getItem('ffUsers')) || {};
+            if (users[userData.username]) {
+                users[userData.username].balance = (users[userData.username].balance || 0) - entryFee;
+                localStorage.setItem('ffUsers', JSON.stringify(users));
+                
+                // Update current user
+                userData.balance = users[userData.username].balance;
+                localStorage.setItem('currentUser', JSON.stringify(userData));
+                
+                // Update display
+                document.getElementById('userBalance').textContent = `PKR ${userData.balance}`;
+            }
+            
+            // Add user to tournament registered players
+            if (!tournament.registeredPlayers) {
+                tournament.registeredPlayers = [];
+            }
+            tournament.registeredPlayers.push(userData.username);
+            tournaments[tournamentIndex] = tournament;
+            localStorage.setItem('tournaments', JSON.stringify(tournaments));
+            
+            // Save transaction
+            const transaction = {
+                type: 'Tournament Entry',
+                amount: entryFee,
+                tournamentName: tournamentName,
+                date: new Date().toISOString(),
+                status: 'completed'
+            };
+            
+            let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+            transactions.push(transaction);
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+            
+            showMessage(`Successfully joined "${tournamentName}"! PKR ${entryFee} deducted from your balance.`, 'success');
+            
+            // Reload tournaments after 2 seconds
+            setTimeout(() => {
+                loadTournaments(userData);
+            }, 2000);
+        }
+
+        // Show message
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
